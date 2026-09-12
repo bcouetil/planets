@@ -1,0 +1,5 @@
+Solar system textures and meshes vendored from
+https://github.com/N3rson/Solar-System-3D (MIT License, Karol Fryc).
+
+Original texture sources listed in that project: NASA 3D Resources,
+Solar System Scope, Planet Pixel Emporium, TurboSquid.
