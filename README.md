@@ -4,7 +4,7 @@ Three.js atlas of [my articles](https://dev.to/bcouetil/all-my-articles-by-theme
 
 Live: <https://bcouetil.github.io/planets/>
 
-The experiment is **zero-click** desktop browsing: [dwell / hover-intent](https://briancherne.github.io/jquery-hoverIntent/), like staying on a menu title until it opens (Wikipedia page previews, an Amazon mega-menu). Pointer X rolls the belt; linger near a docked planet and it comes to the center. The only click is the one that opens an article.
+The experiment is **zero-click** desktop browsing, two gestures and no click until you want an article: **[scrub](https://en.wikipedia.org/wiki/Scrubbing_(audio))** — pointer X rolls the belt, same mapping as a [YouTube seek bar](https://blog.youtube/news-and-events/looking-ahead-in-youtube-player/); **[hover-intent](https://briancherne.github.io/jquery-hoverIntent/)** — linger near a docked planet and it comes to the center.
 
 ![Desktop: five article planets, badges on a Saturn-like belt](readme-desktop.jpg)
 
