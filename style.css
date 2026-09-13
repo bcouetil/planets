@@ -74,3 +74,108 @@ body {
   font-size: 22px;
   line-height: 1.25;
 }
+
+body.poster #series-label,
+body.poster #hud,
+body.poster #dock-tags {
+  display: none;
+}
+
+html[data-mode="mobile"],
+html[data-mode="mobile"] body {
+  overflow: hidden;
+}
+
+#mobile {
+  display: none;
+}
+
+html[data-mode="mobile"] #c,
+html[data-mode="mobile"] #series-label,
+html[data-mode="mobile"] #hud,
+html[data-mode="mobile"] #dock-tags {
+  display: none;
+}
+
+html[data-mode="mobile"] #mobile {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background-color: #05060a;
+  background-image: url("./textures/space-poster.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+#mobile-rail {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y proximity;
+  -webkit-overflow-scrolling: touch;
+  padding: 50dvh 0;
+  box-sizing: border-box;
+}
+
+.mobile-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.mobile-block + .mobile-block {
+  margin-top: 28px;
+}
+
+.mobile-chapter {
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  max-width: calc(100% - 24px);
+}
+
+.mobile-chapter-disk {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+  flex-shrink: 0;
+}
+
+.mobile-chapter-tag {
+  color: #f4f1ea;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-shadow: 0 1px 10px #000;
+}
+
+.mobile-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.mobile-badge {
+  scroll-snap-align: center;
+  display: block;
+  width: calc(100% - 24px);
+  max-width: 520px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.mobile-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

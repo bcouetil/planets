@@ -2,6 +2,11 @@ import * as THREE from "three";
 import { SERIES } from "./articles.js";
 import { createSolarSystem } from "./solar.js";
 
+const qs = new URLSearchParams(location.search);
+const poster = qs.has("poster");
+if (poster) document.body.classList.add("poster");
+window.__posterInfo = null;
+
 window.__THREE_READY__ = false;
 let loadsDone = false;
 let painted = 0;
@@ -228,7 +233,24 @@ addStarLayer({
   drift: 0.08,
 });
 
-const solar = createSolarSystem(scene, camera);
+const solar = createSolarSystem(scene, camera, { poster });
+if (poster) {
+  window.__posterInfo = () => {
+    const out = {};
+    solar.sun.getWorldPosition(_v);
+    _v.project(camera);
+    out.sun = { x: +_v.x.toFixed(3), y: +_v.y.toFixed(3) };
+    for (const [k, b] of Object.entries(solar.bodies)) {
+      b.planet.getWorldPosition(_v);
+      _v.project(camera);
+      out[k] = { x: +_v.x.toFixed(3), y: +_v.y.toFixed(3), z: +_v.z.toFixed(3) };
+    }
+    return out;
+  };
+  window.__park = (name, y) => {
+    solar.bodies[name].planet3d.rotation.y = y;
+  };
+}
 const deepVeil = new THREE.Mesh(
   new THREE.PlaneGeometry(90, 55),
   new THREE.MeshBasicMaterial({
@@ -783,7 +805,7 @@ syncGap();
 
 const planets = [];
 
-SERIES.forEach((serie, index) => {
+if (!poster) SERIES.forEach((serie, index) => {
   const root = new THREE.Group();
   scene.add(root);
 
@@ -930,8 +952,7 @@ function placeNow() {
 resize();
 addEventListener("resize", resize);
 
-const params = new URLSearchParams(location.search);
-const preset = params.get("at");
+const preset = qs.get("at");
 const presets = {
   c: [0.5, 0.5],
   tl: [0.08, 0.1],
@@ -946,7 +967,7 @@ if (preset && presets[preset]) {
   ndc.x = px * 2 - 1;
   ndc.y = -(py * 2 - 1);
 }
-const start = params.get("p");
+const start = qs.get("p");
 if (start !== null && planets[start]) active = planets[Number(start)];
 else {
   const aimed = aimedDock();
@@ -1169,13 +1190,18 @@ function pickBadge() {
 }
 
 function tickSpace(dt, t) {
-  parallax.x += (ndc.x - parallax.x) * (1 - Math.exp(-4 * dt));
-  parallax.y += (ndc.y - parallax.y) * (1 - Math.exp(-4 * dt));
-  camera.position.set(
-    CAM_REST.x,
-    CAM_REST.y + Math.sin((t * Math.PI * 2) / 15) * 0.032,
-    CAM_REST.z + Math.sin((t * Math.PI * 2) / 17 + 1.2) * 0.05,
-  );
+  if (poster) {
+    parallax.set(0, 0);
+    camera.position.set(CAM_REST.x, CAM_REST.y, CAM_REST.z);
+  } else {
+    parallax.x += (ndc.x - parallax.x) * (1 - Math.exp(-4 * dt));
+    parallax.y += (ndc.y - parallax.y) * (1 - Math.exp(-4 * dt));
+    camera.position.set(
+      CAM_REST.x,
+      CAM_REST.y + Math.sin((t * Math.PI * 2) / 15) * 0.032,
+      CAM_REST.z + Math.sin((t * Math.PI * 2) / 17 + 1.2) * 0.05,
+    );
+  }
   camera.lookAt(0, 0, 0);
 
   for (const layer of spaceLayers) {
@@ -1190,7 +1216,7 @@ function tickSpace(dt, t) {
     );
   }
 
-  dockNdc.set(-0.48, -0.28);
+  dockNdc.set(poster ? -0.1 : -0.48, poster ? -0.24 : -0.28);
   dockRay.setFromCamera(dockNdc, camera);
   dockRay.ray.at(52, _v);
   solar.root.position.copy(_v);
@@ -1237,6 +1263,13 @@ function beltFrontPx() {
 function tick() {
   const dt = Math.min(clock.getDelta(), 0.05);
   tickSpace(dt, clock.elapsedTime);
+  if (poster || !active) {
+    renderer.render(scene, camera);
+    painted++;
+    if (loadsDone && painted >= 2) window.__THREE_READY__ = true;
+    requestAnimationFrame(tick);
+    return;
+  }
   settleFocus(dt);
   if (active.sliding) {
     active.spin =

@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1280" />
-    <title>Article planets</title>
-    <link rel="stylesheet" href="./style.css" />
-    <script type="importmap">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>Article planets</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script>
+    (() => {
+      const q = new URLSearchParams(location.search);
+      const mobile =
+        q.has("mobile") ||
+        matchMedia("(hover: none) and (pointer: coarse)").matches;
+      document.documentElement.dataset.mode = mobile ? "mobile" : "desktop";
+      if (mobile) {
+        document.querySelector('meta[name="viewport"]').content =
+          "width=device-width, initial-scale=1, viewport-fit=cover";
+      }
+    })();
+  </script>
+  <script type="importmap">
       {
         "imports": {
           "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
@@ -13,14 +27,22 @@
         }
       }
     </script>
-  </head>
-  <body>
-    <a id="series-label" target="_blank" rel="noopener noreferrer"></a>
-    <div id="dock-tags" aria-hidden="true"></div>
-    <div id="hud">
-      <p id="article-label">Move across a planet</p>
-    </div>
-    <canvas id="c"></canvas>
-    <script type="module" src="./main.js"></script>
-  </body>
+</head>
+
+<body>
+  <a id="series-label" target="_blank" rel="noopener noreferrer"></a>
+  <div id="dock-tags" aria-hidden="true"></div>
+  <div id="hud">
+    <p id="article-label">Move across a planet</p>
+  </div>
+  <canvas id="c"></canvas>
+  <script type="module">
+    if (document.documentElement.dataset.mode === "mobile") {
+      import("./mobile.js");
+    } else {
+      import("./main.js");
+    }
+  </script>
+</body>
+
 </html>

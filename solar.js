@@ -42,7 +42,33 @@ function sunGlowMap() {
   return t;
 }
 
-export function createSolarSystem(scene, camera) {
+const LIVE_Y = {
+  mercury: Math.PI + 0.45 - 0.52,
+  venus: (3 * Math.PI) / 2 - 0.5 - 0.52,
+  earth: (3 * Math.PI) / 2 + 0.12 - 0.52,
+  mars: Math.PI - 0.35 - 0.52,
+  jupiter: -0.34,
+  saturn: -0.62,
+  uranus: -0.74,
+  neptune: -0.38,
+  pluto: Math.PI + 0.2 - 0.52,
+};
+
+// Portrait wallpaper only. Live desktop keeps LIVE_Y. Tilt stays 60°.
+const POSTER_Y = {
+  mercury: 3.14,
+  venus: 3.93,
+  earth: 5.24,
+  mars: 0.79,
+  jupiter: 1.8,
+  saturn: 1.32,
+  uranus: 1.56,
+  neptune: 1.89,
+  pluto: 1.2,
+};
+
+export function createSolarSystem(scene, camera, opts = {}) {
+  const poster = !!opts.poster;
   camera.layers.enable(LAYER);
   const loader = new THREE.TextureLoader();
   const root = new THREE.Group();
@@ -347,16 +373,16 @@ export function createSolarSystem(scene, camera) {
   const neptune = createPlanet(24 / 4, 340, 28, `${T}/neptune.jpg`);
   const pluto = createPlanet(1, 350, 57, `${T}/plutomap.jpg`);
 
-  const start = -0.52;
-  mercury.planet3d.rotation.y = Math.PI + 0.45 + start;
-  venus.planet3d.rotation.y = (3 * Math.PI) / 2 - 0.5 + start;
-  earth.planet3d.rotation.y = (3 * Math.PI) / 2 + 0.12 + start;
-  mars.planet3d.rotation.y = Math.PI - 0.35 + start;
-  jupiter.planet3d.rotation.y = -0.34;
-  saturn.planet3d.rotation.y = -0.62;
-  uranus.planet3d.rotation.y = -0.74;
-  neptune.planet3d.rotation.y = -0.38;
-  pluto.planet3d.rotation.y = Math.PI + 0.2 + start;
+  const park = poster ? POSTER_Y : LIVE_Y;
+  mercury.planet3d.rotation.y = park.mercury;
+  venus.planet3d.rotation.y = park.venus;
+  earth.planet3d.rotation.y = park.earth;
+  mars.planet3d.rotation.y = park.mars;
+  jupiter.planet3d.rotation.y = park.jupiter;
+  saturn.planet3d.rotation.y = park.saturn;
+  uranus.planet3d.rotation.y = park.uranus;
+  neptune.planet3d.rotation.y = park.neptune;
+  pluto.planet3d.rotation.y = park.pluto;
 
   const gltf = new GLTFLoader();
   function loadMoonModel(moon, system) {
@@ -390,29 +416,42 @@ export function createSolarSystem(scene, camera) {
   return {
     root,
     sun,
+    bodies: {
+      mercury,
+      venus,
+      earth,
+      mars,
+      jupiter,
+      saturn,
+      uranus,
+      neptune,
+      pluto,
+    },
     tick(dt) {
       const f = dt * 60;
       sun.rotateY(0.001 * f);
       mercury.planet.rotateY(0.001 * f);
-      mercury.planet3d.rotateY(0.004 * f);
       venus.planet.rotateY(0.0005 * f);
       if (venus.Atmosphere) venus.Atmosphere.rotateY(0.0005 * f);
-      venus.planet3d.rotateY(0.0006 * f);
       earth.planet.rotateY(0.005 * f);
       if (earth.Atmosphere) earth.Atmosphere.rotateY(0.001 * f);
-      earth.planet3d.rotateY(0.001 * f);
       mars.planet.rotateY(0.01 * f);
-      mars.planet3d.rotateY(0.0007 * f);
       jupiter.planet.rotateY(0.005 * f);
-      jupiter.planet3d.rotateY(0.0003 * f);
       saturn.planet.rotateY(0.01 * f);
-      saturn.planet3d.rotateY(0.0002 * f);
       uranus.planet.rotateY(0.005 * f);
-      uranus.planet3d.rotateY(0.0001 * f);
       neptune.planet.rotateY(0.005 * f);
-      neptune.planet3d.rotateY(0.00008 * f);
       pluto.planet.rotateY(0.001 * f);
-      pluto.planet3d.rotateY(0.00006 * f);
+      if (!poster) {
+        mercury.planet3d.rotateY(0.004 * f);
+        venus.planet3d.rotateY(0.0006 * f);
+        earth.planet3d.rotateY(0.001 * f);
+        mars.planet3d.rotateY(0.0007 * f);
+        jupiter.planet3d.rotateY(0.0003 * f);
+        saturn.planet3d.rotateY(0.0002 * f);
+        uranus.planet3d.rotateY(0.0001 * f);
+        neptune.planet3d.rotateY(0.00008 * f);
+        pluto.planet3d.rotateY(0.00006 * f);
+      }
 
       const time = performance.now();
       tickMoons(earth.moons, earth, time);
